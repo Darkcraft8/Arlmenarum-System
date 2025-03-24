@@ -1,0 +1,13 @@
+{
+  "author" : "Darkcraft8",
+  "description" : "",
+  "suggestedClient" : "openStarbound",
+  "friendlyName" : "Arlmenarum | System",
+  "name" : "d8Arlmenarum_System",
+  "priority" : 9000,
+  "include" : [],
+  "require" : ["d8_sharedFiles"],
+  "tags" : "Miscellaneous|Dungeons|Mechanics",
+  "version" : "0.0.1",
+  "scripts": {}
+}
