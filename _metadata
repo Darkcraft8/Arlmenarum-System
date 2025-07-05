@@ -1,7 +1,7 @@
 {
   "author" : "Darkcraft8",
-  "description" : "",
-  "suggestedClient" : "openStarbound",
+  "description" : "System's created for the arlmenarum mod suite.",
+  "recommendedClient" : "openStarbound",
   "friendlyName" : "Arlmenarum | System",
   "name" : "d8Arlmenarum_System",
   "priority" : 9000,
@@ -9,5 +9,7 @@
   "require" : ["d8_sharedFiles"],
   "tags" : "Miscellaneous|Dungeons|Mechanics",
   "version" : "0.0.1",
-  "scripts": {}
+  "scripts": {"postLoad": [
+    "/Arlmenarum/System/oSB/mission/postInit.lua"
+  ]}
 }
