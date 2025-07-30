@@ -4,7 +4,7 @@ local list = assets.json(listPath)
 local count = 0
 local registered = {}
 for kind, missionList in pairs(list) do
-    sb.logInfo("[Arlmenarum System | Fetching Postload]: Registering mission of %s kind", kind)
+    sb.logInfo("[Arlmenarum System] Mission Postload: Registering %s mission", kind)
     registered[kind] = missionList or {}
 
     local fileList = assets.byExtension(kind .. "mission")
@@ -24,7 +24,7 @@ for kind, missionList in pairs(list) do
     end
 
     if kindCount > 0 then    
-        sb.logInfo("[Arlmenarum System | Fetching Postload]: Registered %s mission", kindCount)
+        sb.logInfo("[Arlmenarum System] Mission Postload: Registered %s mission", kindCount)
     end
 end
 
@@ -33,5 +33,5 @@ if count > 0 then
     assets.add(path, registered)
     assets.patch(listPath, path)
 
-    sb.logInfo("[Arlmenarum System| Fetching Postload] Registered %s mission in total", count)
+    sb.logInfo("[Arlmenarum System] Mission Postload: Registered %s mission in total", count)
 end

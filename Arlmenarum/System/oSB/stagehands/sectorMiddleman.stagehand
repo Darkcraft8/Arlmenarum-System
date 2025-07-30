@@ -1,0 +1,9 @@
+{
+  "type" : "ArlmSys_sectorMiddleman",
+  
+  "scripts" : [
+  	"/Arlmenarum/System/oSB/stagehands/sectorMiddleman.lua",
+    "/Arlmenarum/System/oSB/cockpit/sector/server.lua"
+  ],
+  "scriptDelta" : 5
+}

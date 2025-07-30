@@ -1,8 +1,8 @@
 {
   "author" : "Darkcraft8",
-  "description" : "System's created for the arlmenarum mod suite.",
+  "description" : "Systems and Utils that where created for the arlmenarum mod suite.",
   "recommendedClient" : "openStarbound",
-  "friendlyName" : "Arlmenarum | System",
+  "friendlyName" : "Arlmenarum | Systems and Utils",
   "name" : "d8Arlmenarum_System",
   "priority" : 9000,
   "include" : [],

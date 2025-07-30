@@ -1,0 +1,9 @@
+[
+  [
+    { 
+      "op" : "add",
+      "path" : "/genericScriptContexts/ArlmSys_Sector",
+      "value" : "/Arlmenarum/System/oSB/cockpit/sector/client.lua"
+    }
+  ]
+]

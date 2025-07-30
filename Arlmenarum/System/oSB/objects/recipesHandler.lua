@@ -15,13 +15,10 @@ function recipeHandler:paneRecipes(recipes, interactData)
     recipes = interactData.recipes or configJson.recipes or {}
 end
 
-function recipeHandler:researchRecipes(recipes)
+function recipeHandler:researchRecipes(recipes) -- currently this doesn't serve a purpose because the research/mastery system isn't built yet
     local testRecipes = {
         input = {
-            { item = "darkwoodmaterial", count = 6 },
-            { item = "paper", count = 1 },
-            { item = "ironbar", count = 2},
-            { item = "coalore", count = 1}
+            { item = "darkwoodmaterial", count = 1 }
         },
         output = {
             item = "darkwoodmaterial",
@@ -57,15 +54,15 @@ function recipeHandler:allRecipes(filter, recipeList, recipes)
         if add then table.insert(recipes, recipe) end
     end
 end
---- exemple of usage of result
-
--- local newRecipesList = buildRecipesList(interactData)
--- if type(newRecipesList) == "table" then
---     interactData.recipes = newRecipesList
--- end
-
----
-
--- Todo :
--- Find why the filters get messed up or manually check recipes for the filters : Done
--- how vanilla check for filter : if there one filter that is the same add the recipe...
+--[[
+    exemple of usage of result
+        local newRecipesList = buildRecipesList(interactData)
+        if type(newRecipesList) == "table" then
+            interactData.recipes = newRecipesList
+        end
+]]
+--[[
+    Todo :
+        Find why the filters get messed up or manually check recipes for the filters : Done
+        how vanilla check for filter : if there one filter that is the same add the recipe...
+]]
