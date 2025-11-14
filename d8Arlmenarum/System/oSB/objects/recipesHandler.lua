@@ -1,8 +1,8 @@
 local recipeHandler = {}
-function buildRecipesList(interactData) -- we only need to give recipes that are from the vanilla database and/or unlocked through the research system or other
+function buildRecipesList(interactData, additionalRecipes) -- we only need to give recipes that are from the vanilla database and/or given by previous func through second argument
     local recipes = {}
     recipeHandler:paneRecipes(recipes, interactData)
-    recipeHandler:researchRecipes(recipes, interactData)
+    recipeHandler:addRecipesWithFilter(additionalRecipes, interactData)
     recipeHandler:vanillaRecipes(recipes, interactData)
     return recipes
 end
@@ -15,19 +15,23 @@ function recipeHandler:paneRecipes(recipes, interactData)
     recipes = interactData.recipes or configJson.recipes or {}
 end
 
-function recipeHandler:researchRecipes(recipes) -- currently this doesn't serve a purpose because the research/mastery system isn't built yet
-    local testRecipes = {
-        input = {
-            { item = "darkwoodmaterial", count = 1 }
-        },
-        output = {
-            item = "darkwoodmaterial",
-            count = 1
-        },
-        duration = 1,
-        groups = { "d8Weaponry_gunsmithing_lv1", "d8Weaponry_gunsmithing" }
-    }
-    table.insert(recipes, testRecipes)
+function recipeHandler:addRecipes(additionalRecipes)
+    if not additionalRecipes then return end
+    for i, recipe in pairs(additionalRecipes) do 
+        table.insert(recipes, recipe)
+    end
+end
+
+function recipeHandler:addRecipesWithFilter(additionalRecipes, interactData)
+    if not additionalRecipes then return end
+    for i, recipe in pairs(additionalRecipes) do 
+        if type(recipe) == "string" then recipe = root.assetJson(recipe) end
+        local add = false
+        for _, filter in ipairs(interactData.filter or {}) do
+            if string.find(sb.printJson(recipe.groups), filter) then add = true break end
+        end
+        if add then table.insert(recipes, recipe) end
+    end
 end
 
 function recipeHandler:vanillaRecipes(recipes, interactData)
@@ -64,5 +68,5 @@ end
 --[[
     Todo :
         Find why the filters get messed up or manually check recipes for the filters : Done
-        how vanilla check for filter : if there one filter that is the same add the recipe...
+          how vanilla seem to check for filter : if there one filter that is the same add the recipe...
 ]]

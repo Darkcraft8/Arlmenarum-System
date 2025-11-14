@@ -1,14 +1,14 @@
 
-local listPath = "/Arlmenarum/System/oSB/mission/list.config"
+local listPath = "/d8Arlmenarum/System/oSB/mission/list.config"
 local list = assets.json(listPath)
 local count = 0
 local registered = {}
-for kind, missionList in pairs(list) do
-    sb.logInfo("[Arlmenarum System] Mission Postload: Registering %s mission", kind)
-    registered[kind] = missionList or {}
+for missionType, missionList in pairs(list) do
+    sb.logInfo("[Arlmenarum System] Mission Postload: Registering %s mission", missionType)
+    registered[missionType] = missionList or {}
 
-    local fileList = assets.byExtension(kind .. "mission")
-    local kindCount = 0
+    local fileList = assets.byExtension(missionType .. "mission")
+    local missionTypeCount = 0
     for i = 1, #fileList do -- fetch vanilla mission's
         local jsonFile = fileList[i]
         local missionName = assets.json(jsonFile)["missionName"]
@@ -17,14 +17,14 @@ for kind, missionList in pairs(list) do
             if list[i] == missionName then alreadyExist = true end
         end
         if not alreadyExist then
-            table.insert(registered[kind], missionName)
+            table.insert(registered[missionType], missionName)
             count = count + 1
-            kindCount = kindCount + 1
+            missionTypeCount = missionTypeCount + 1
         end
     end
 
-    if kindCount > 0 then    
-        sb.logInfo("[Arlmenarum System] Mission Postload: Registered %s mission", kindCount)
+    if missionTypeCount > 0 then    
+        sb.logInfo("[Arlmenarum System] Mission Postload: Registered %s mission", missionTypeCount)
     end
 end
 

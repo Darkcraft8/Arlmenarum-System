@@ -20,7 +20,7 @@ function isOwner() -- return if the player uuid is the same as the object owner
 end
 
 local isUsingArlmUIMemory = nil -- only here so that we don't reopen interface.config after already checking
-function isUsingArlmUI() -- only here in case someone want to integrate support for arlm-ui to the object
+function isUsingArlmUI() -- only here in case someone want to integrate support for arlm-ui to the object interface
     if isUsingArlmUIMemory == nil then
         isUsingArlmUIMemory = (root.assetJson("/interface.config") or {}).arlmUI_Installed or false
     end

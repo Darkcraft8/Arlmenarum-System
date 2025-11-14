@@ -14,7 +14,7 @@ end
 
 --[[
     downSize and move the children based on the difference between the childrens min positions and default size of the layout
-    work extremely well for itemList has it doesn't require the itemSlots to be reloaded/recreated
+    work extremely well for optimizing itemList has it doesn't require the itemSlots to be reloaded/recreated
 ]]
 layout.resize = function(self, layoutPath, hiddenList, widgetList, isList)
     if not layoutData[layoutPath] then layout:reset(layoutPath) end

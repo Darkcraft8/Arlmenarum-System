@@ -2,15 +2,27 @@ require "/scripts/util.lua"
 -- itemDescriptor
 
     --[[ Todo
-        make the wearables (head, chest, legs, back ect) use their player/npc entity sprite like in vanilla instead of the item icon
+        Done : make the wearables (head, chest, legs, back ect) use their player/npc entity sprite like in vanilla instead of the item icon
+        Done : fix the object placement image not being used ,_,
+        To Do : Make so that tile use their configurated preview image/frame
+        To Do : Allow for usage of mannequin like vanilla
+        To Do : Check if it could be used in vanilla with or without some change
     ]]
     local returnItemName = function(item)
         return item.item or item.name or item.itemName or item[1] or item
     end
+    
+    local rarityLabel = {
+        common = "Common",
+        uncommon = "Uncommon",
+        rare = "Rare",
+        legendary = "Legendary",
+        essential = "Essential"
+    }
 
     local itemDescriptorType = {}
     function populateCraftDescription(layoutWidget, itemDescriptor)
-        widget.removeAllChildren(layoutWidget, widgetName)
+        widget.removeAllChildren(layoutWidget)
         if type(itemDescriptor) ~= "table" then itemDescriptor = root.createItem(itemDescriptor) end
         local itemCfg = itemDescriptor
         if not itemDescriptor.config then
@@ -25,7 +37,7 @@ require "/scripts/util.lua"
         local tooltipKind = configParameters("descriptorKind") or configParameters("tooltipKind")
         if not tooltipKind then tooltipKind = "base" end
         local path = ""
-        if not string.find(tooltipKind, "/") then
+        if not (string.find(tooltipKind, "/") == 1) then
             path = string.format("/interface/itemdescriptions/%s.itemdescription", tooltipKind)
         else
             path = tooltipKind
@@ -67,7 +79,7 @@ require "/scripts/util.lua"
                 if tooltipFields[widgetName] then
                     local image = tooltipFields[widgetName]
                     if type(image) == "string" then
-                        if not string.find(image, "/") then
+                        if not (string.find(image, "/") == 1) then
                             image = itemCfg.directory.. image
                         end
                         widget.setImage(widgetPath, image)
@@ -75,7 +87,7 @@ require "/scripts/util.lua"
                         local position = widget.getPosition(widgetPath)
                         local newImage = copy(widgetCfg)
                         for imageIndex, imageCfg in pairs(image or {}) do
-                            if not string.find(imageCfg.image, "/") then
+                            if not (string.find(imageCfg.image, "/") == 1) then
                                 imageCfg.image = descriptor.directory.. imageCfg.image
                             end
                         end
@@ -93,8 +105,7 @@ require "/scripts/util.lua"
             local configParameters = function(paramName)
                 return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
             end
-            local leveledStatusEffects = configParameters("leveledStatusEffects")
-            for _, statusEffect in pairs(leveledStatusEffects or {}) do 
+            local describe = function(statusEffect)
                 local id = widget.addListItem(widgetPath)
                 local path = widgetPath.."."..id 
                 local level = configParameters("level")
@@ -102,11 +113,17 @@ require "/scripts/util.lua"
                 local image = "/interface/stats/" .. statusEffect.stat .. ".png"
                 local input = statusEffect.baseMultiplier or statusEffect.amount
                 local statusLabel = root.evalFunction(statusEffect.levelFunction, level)
-                if statusEffect.baseMultiplier then statusLabel = tostring( (statusEffect.baseMultiplier) * 100) .. "%" end
+                if statusEffect.baseMultiplier then statusLabel = tostring( ((statusEffect.baseMultiplier - 1) * 100) * level ) .. "%" end
                 if statusEffect.effectiveMultiplier then statusLabel = tostring(((statusEffect.effectiveMultiplier)) * statusLabel) .. "%" end
                 if statusEffect.amount then statusLabel = statusLabel * (statusEffect.amount or 1) end
                 widget.setText(path..".statusLabel", tostring(statusLabel)) 
                 widget.setImage(path..".statusImage", image)
+            end
+            for _, statusEffect in pairs(configParameters("leveledStatusEffects", {})) do 
+                describe(statusEffect)
+            end
+            for _, statusEffect in pairs(configParameters("statusEffects", {})) do 
+                describe(statusEffect)
             end
         end
 
@@ -126,8 +143,65 @@ require "/scripts/util.lua"
             widget.setText(path, tooltipFields.subTitle or category[configParameters("category")] or configParameters("category") or "")
         end
 
-        function itemDescriptorType.titleIcon(path, descriptor)
-            widget.setItemSlotItem(path, descriptor)
+        function itemDescriptorType.titleIcon(path, descriptor, widgetCfg, layoutWidget, widgetName)
+            local configParameters = function(paramName)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            end
+            --local devAtWork = true
+            if widgetCfg.iconMode and devAtWork then
+                local widgetCfg = copy(widgetCfg)
+                widgetCfg.type = "image"
+                widgetCfg.position = vec2.add(widgetCfg.position, {11, 11})
+                widgetCfg.centered = true
+                widgetCfg.zlevel = -1
+                widgetCfg.drawables = {
+                    
+                }
+                local invIcon = configParameters("inventoryIcon", configParameters("codexIcon"))
+                local rarity = rarityLabel[string.lower(configParameters("rarity"))]
+                if widgetCfg.backingImage then
+                    table.insert(widgetCfg.drawables, {image = widgetCfg.backingImage})
+                end
+                if layoutWidget and widgetName then
+					widget.addChild(layoutWidget, widgetCfg, widgetName .. ".backing")
+				elseif not layoutWidget then
+					sb.logInfo("Error %s layoutWidget", layoutWidget)
+				elseif not widgetName then
+					sb.logInfo("Error %s widgetName", widgetName)
+                end
+                widgetCfg.drawables = {
+                    
+                }
+                widgetCfg.zlevel = 0
+                if widgetCfg.showRarity then
+                    table.insert(widgetCfg.drawables, {image = string.gsub("/interface/inventory/itemborder<rarity>.png", "<rarity>", rarity)})
+                end
+                if type(invIcon) == "string" then
+                    if not (string.find(invIcon, "/") == 1) then
+                        invIcon = descriptor.directory.. invIcon
+                    end
+                    table.insert(widgetCfg.drawables, {image = invIcon})
+                else
+                    for _, drawable in pairs(invIcon or {}) do 
+                        if not (string.find(drawable.image, "/") == 1) then
+                            drawable.image = descriptor.directory.. drawable.image
+                        end
+                        table.insert(widgetCfg.drawables, drawable)
+                    end
+                end
+
+                widget.removeChild(layoutWidget, widgetName)
+				if layoutWidget and widgetName then
+					widget.addChild(layoutWidget, widgetCfg, widgetName)
+				elseif not layoutWidget then
+					sb.logInfo("Error %s layoutWidget", layoutWidget)
+				elseif not widgetName then
+					sb.logInfo("Error %s widgetName", widgetName)
+				end
+            else
+                widget.setItemSlotItem(path, descriptor)
+            end
+            
         end
 
         function itemDescriptorType.priceLabel(path, descriptor)
@@ -144,13 +218,6 @@ require "/scripts/util.lua"
             widget.setText(path, configParameters("description") or "")
         end
 
-        local rarityLabel = {
-            common = "Common",
-            uncommon = "Uncommon",
-            rare = "Rare",
-            legendary = "Legendary",
-            essential = "Essential"
-        }
         function itemDescriptorType.rarityLabel(path, descriptor)
             local configParameters = function(paramName)
                 return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
@@ -182,27 +249,30 @@ require "/scripts/util.lua"
                     return false
                 else
                     local category = configParameters("category")
-                    if category == "headwear" or category == "headarmour" then
+                    local maleFrames = configParameters("maleFrames")
+                    if type(maleFrames) == "table" then maleFrames = maleFrames.body end
+                    if category == "headwear" or category == "headarmour" or string.find(maleFrames, "head") then
                         return "head"
                     end
-                    if category == "chestwear" or category == "chestarmour" then
+                    if category == "chestwear" or category == "chestarmour" or string.find(maleFrames, "chest") then
                         return "chest"
                     end
-                    if category == "legwear" or category == "legarmour" then
+                    if category == "legwear" or category == "legarmour" or string.find(maleFrames, "pants") then
                         return "legs"
                     end
-                    if category == "backwear" or category == "backarmour" then
+                    if category == "backwear" or category == "backarmour" or string.find(maleFrames, "back") then
                         return "back"
                     end
                     return false
                 end
             end
-            local image = configParameters("inventoryIcon") or configParameters("codexIcon")
-
+            local image = configParameters("inventoryIcon", configParameters("codexIcon"))
+            local tooltipKind = configParameters("tooltipKind")
+            
             if configParameters("objectName") then -- object image
                 local placementImage = configParameters("placementImage")
                 if placementImage then
-                    if not string.find(placementImage, "/") then
+                    if not (string.find(placementImage, "/") == 1) then
                         placementImage = descriptor.directory.. placementImage
                     end
                     widget.setImage(path, placementImage .. "?flipx")
@@ -211,15 +281,18 @@ require "/scripts/util.lua"
                     local orientations = configParameters("orientations")
                     local image = orientations[1].dualImage or orientations[1].image or orientations[1].imageLayers
                     if type(image) == "string" then
-                        if not string.find(image, "/") then
+                        if not (string.find(image, "/") == 1) then
                             image = descriptor.directory.. image
                         end
-                        widget.setImage(path, string.gsub(string.gsub(string.gsub(image, "<color>", color or "default"), "<frame>", "default"), "<key>", "default") .. "?flipx")
+                        if (not orientations[1].image) or orientations[1].flipImages then
+                            image = image .. "?flipx"
+                        end
+                        widget.setImage(path, string.gsub(string.gsub(string.gsub(image, "<color>", color or "default"), "<frame>", "default"), "<key>", "default"))
                     else
                         local position = widget.getPosition(path)
                         local newImage = copy(widgetCfg)
                         for imageIndex, imageCfg in pairs(image or {}) do
-                            if not string.find(imageCfg.image, "/") then
+                            if not (string.find(imageCfg.image, "/") == 1) then
                                 imageCfg.image = descriptor.directory.. imageCfg.image
                             end
                             --sb.logInfo("imageCfg.image %s", imageCfg.image)
@@ -227,11 +300,18 @@ require "/scripts/util.lua"
                         end
                         newImage.drawables = image
                         widget.removeChild(layoutWidget, widgetName)
-                        widget.addChild(layoutWidget, newImage, widgetName)
+						if layoutWidget and newImage and widgetName then
+							widget.addChild(layoutWidget, newImage, widgetName)
+						elseif not layoutWidget then
+							sb.logInfo("Error %s layoutWidget", layoutWidget)
+						elseif not newImage then
+							sb.logInfo("Error %s newImage", newImage)
+						elseif not widgetName then
+							sb.logInfo("Error %s widgetName", widgetName)
+						end
                     end
                 end
-            end
-            if isAWearable() then
+            elseif isAWearable() then
                 local category = configParameters("category")
                 local parameters = {
                     identity = {},
@@ -250,40 +330,67 @@ require "/scripts/util.lua"
                 end
                 local wearableType = isAWearable()
                 parameters["items"]["override"][1][2][1][wearableType] = {descriptor}
-
+                if not (root.assetJson("/interface.config:tooltip.previewArmorWith") == "dummy" or root.assetJson("/interface.config:tooltip.previewArmorWith") == nil) then
+                    parameters.identity = {
+                        bodyDirectives = "?multiply=fff0",
+                        facialMaskDirectives = "?multiply=fff0",
+                        facialHairDirectives = "?multiply=fff0",
+                        emoteDirectives = "?multiply=fff0",
+                        hairDirectives = "?multiply=fff0"
+                    }
+                end
                 image = root.npcPortrait("fullneutral", player.species(), "nakedvillager", 1, player.id(), parameters)
                 local position = widget.getPosition(path)
                 local newImage = copy(widgetCfg)
                 newImage.drawables = image
+                if not (root.assetJson("/interface.config:tooltip.previewArmorWith") == "dummy" or root.assetJson("/interface.config:tooltip.previewArmorWith") == nil or config.getParameter("descriptorUseDummy")) then
+                    for a, b in pairs(newImage.drawables) do
+                        if string.find(b.image, "/humanoid") == 1 then
+                            local mannequin = copy(b)
+                            if string.find(b.image, "backarm") then
+                                mannequin.image = "/humanoid/any/dummybackarm.png:idle.1"
+                            elseif string.find(b.image, "frontarm") then
+                                mannequin.image = "/humanoid/any/dummyfrontarm.png:idle.1"
+                            elseif string.find(b.image, "head") then
+                                mannequin.image = "/humanoid/any/dummyhead.png:normal"
+                            elseif string.find(b.image, "body") then
+                                mannequin.image = "/humanoid/any/dummybody.png:idle.1"
+                            else
+                                mannequin.image = "/assetmissing.png:?crop;0;0;1;1"
+                            end
+                            newImage.drawables[a] = mannequin
+                        end
+                    end
+                end
                 widget.removeChild(layoutWidget, widgetName)
                 widget.addChild(layoutWidget, newImage, widgetName)
-                return
-            end
-        
-            if type(image) == "string" then
-                if not string.find(image, "/") then
-                    image = descriptor.directory.. image
-                end
-                widget.setImage(path, image)
             else
-                local position = widget.getPosition(path)
-                local newImage = {}
-                for a, b in pairs(widgetCfg) do 
-                    if a ~= "file" then
-                        newImage[a] = b
+                --sb.logInfo("tooltipKind %s", tooltipKind)
+                if type(image) == "string" then
+                    if not (string.find(image, "/") == 1) then
+                        image = descriptor.directory.. image
                     end
-                end
-                for imageIndex, imageCfg in pairs(image or {}) do
-                    if not string.find(imageCfg.image, "/") then
-                        imageCfg.image = descriptor.directory.. imageCfg.image
+                    widget.setImage(path, image)
+                else
+                    local position = widget.getPosition(path)
+                    local newImage = {}
+                    for a, b in pairs(widgetCfg) do 
+                        if a ~= "file" then
+                            newImage[a] = b
+                        end
                     end
+                    for imageIndex, imageCfg in pairs(image or {}) do
+                        if not (string.find(imageCfg.image, "/") == 1) then
+                            imageCfg.image = descriptor.directory.. imageCfg.image
+                        end
+                    end
+                    newImage.drawables = image
+                    widget.removeChild(layoutWidget, widgetName)
+                    if not image then
+                        sb.logInfo("no image found for descriptor!: %s", descriptor)
+                    end
+                    widget.addChild(layoutWidget, newImage, widgetName)
                 end
-                newImage.drawables = image
-                widget.removeChild(layoutWidget, widgetName)
-                if not image then
-                    sb.logInfo("descriptor %s", descriptor)
-                end
-                widget.addChild(layoutWidget, newImage, widgetName)
             end
             return
         end
@@ -293,7 +400,7 @@ require "/scripts/util.lua"
                 return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
             end
             local image = configParameters("largeImage")
-            if not string.find(image, "/") then
+            if not (string.find(image, "/") == 1) then
                 image = descriptor.directory.. image
             end
             widget.setImage(path, image)

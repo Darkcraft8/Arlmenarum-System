@@ -10,6 +10,6 @@
   "tags" : "Miscellaneous|Dungeons|Mechanics",
   "version" : "0.0.1",
   "scripts": {"postLoad": [
-    "/Arlmenarum/System/oSB/mission/postInit.lua"
+    "/d8Arlmenarum/System/oSB/mission/postInit.lua"
   ]}
 }

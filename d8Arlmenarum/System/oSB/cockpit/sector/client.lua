@@ -1,4 +1,4 @@
--- *sigh*... implementation of a system to separate the normal universe space from modded ones, mean't for either custom space sector or other world/universe like sub-space or thing like that...
+-- *sigh*... implementation of a system to separate the normal universe space from modded ones, meant for either custom space sector or other world/universe like sub-space or thing like that... would have been cool to have a fully fledged cyberspace themed sub-universe/sector
 sector = {}
 sectorStorage = {
     call = {
@@ -15,7 +15,7 @@ sectorStorage = {
     }
 }
 function init()
-    config = root.assetJson("/Arlmenarum/System/oSB/cockpit/sector/sector.config")
+    config = root.assetJson("/d8Arlmenarum/System/oSB/cockpit/sector/sector.config")
     for _, scriptPath in pairs(config.clientScripts) do require(scriptPath) end
     message.setHandler("sectorStagehand", function(messageName, isLocal, stagehandId)
         storage.stagehand = stagehandId

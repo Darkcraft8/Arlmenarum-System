@@ -1,16 +1,20 @@
-local prepareStorage = function()
+--[[
+    Experimental Stagehand to communicate with the server for a pseudo sector system,
+
+    WIP
+]]
+local prepareStorage = function(playerName)
     local generatedStorage = false
     if not root.getConfigurationPath("Arlmenarum") then root.setConfigurationPath("Arlmenarum", {}) generatedStorage = true end
     if not root.getConfigurationPath("Arlmenarum.System") then root.setConfigurationPath("Arlmenarum.System", {}) generatedStorage = true end
     if not root.getConfigurationPath("Arlmenarum.System.Sector") then root.setConfigurationPath("Arlmenarum.System.Sector", {}) generatedStorage = true end
 
-    if generatedStorage then sb.logInfo("[Arlmenarum] : Storage For The Sector System Has Been Prepared. Path -> \"Arlmenarum.System.Sector\" ") end
+    if generatedStorage then sb.logInfo("[Arlmenarum] : Storage For The Sector System Has Been Prepared. Path -> \"Arlmenarum.System.Sector\" inside your config file, asked due to \"%s\" accessing a pane that require it.", playerName) end
 end
 playerId, playerUuid = nil, nil
 function init()
-    prepareStorage()
-    
     playerId, playerUuid = config.getParameter("playerId"), config.getParameter("playerUuid")
+    --prepareStorage(world.entityName(playerId))
     if (not playerUuid) or (not playerId) then stagehand.die() return end
     if not world.entityExists(playerId) then stagehand.die() end
     sb.logInfo("[Arlmenarum System] stagehand %s has been spawned to act as sector \"middleman\" for player %s:%s", stagehand.id(), playerId, world.entityName(playerId))
