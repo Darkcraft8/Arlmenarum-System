@@ -1,0 +1,16 @@
+{
+  "id" : "objectScanLogger",
+  "title" : "^orange;Object Scan Loggers",
+  "text" : "This quest is required for the loggin of scanned objects in vanilla.",
+  "completionText" : "You somehow broke this very simple logger... just beam in/out of a world to reset it.",
+  "moneyRange" : [0,0],
+  "ephemeral" : true,
+  "showInLog" : false,
+  "showAcceptDialog" : false,
+  "canBeAbandoned" : false,
+  "rewards" : [],
+
+  "updateDelta" : 0,
+  "script" : "/d8Arlmenarum/System/vanilla/quest/system/objectScanLogger.lua",
+  "scriptConfig" : {}
+}

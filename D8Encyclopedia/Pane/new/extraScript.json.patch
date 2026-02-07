@@ -1,0 +1,9 @@
+[
+  [
+    { 
+      "op" : "add",
+      "path" : "/ArlmSystemResearch",
+      "value" : "/D8Encyclopedia/Pane/ArlmSystem/research.lua"
+    }
+  ]
+]

@@ -18,7 +18,7 @@ function isOwner() -- return if the player uuid is the same as the object owner
     sb.logInfo("Pane doesn't have a source... expecting it to be opener by player")
     return true
 end
-
+-- should problably remove this function... and the `arlmUI_Installed` boolean, the mod version should be in versioning and would suffice
 local isUsingArlmUIMemory = nil -- only here so that we don't reopen interface.config after already checking
 function isUsingArlmUI() -- only here in case someone want to integrate support for arlm-ui to the object interface
     if isUsingArlmUIMemory == nil then

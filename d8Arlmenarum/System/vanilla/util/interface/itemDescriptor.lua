@@ -4,9 +4,9 @@ require "/scripts/util.lua"
     --[[ Todo
         Done : make the wearables (head, chest, legs, back ect) use their player/npc entity sprite like in vanilla instead of the item icon
         Done : fix the object placement image not being used ,_,
-        To Do : Make so that tile use their configurated preview image/frame
-        To Do : Allow for usage of mannequin like vanilla
-        To Do : Check if it could be used in vanilla with or without some change
+        To Do : Make so that tile use their configurated preview image/frame... might require an external json file that list material id's
+        Done : Allow for usage of mannequin like vanilla
+        Should Work : Check if it could be used in vanilla with or without some change
     ]]
     local returnItemName = function(item)
         return item.item or item.name or item.itemName or item[1] or item
@@ -20,8 +20,9 @@ require "/scripts/util.lua"
         essential = "Essential"
     }
 
-    local itemDescriptorType = {}
+    itemDescriptorType = {}
     function populateCraftDescription(layoutWidget, itemDescriptor)
+        if not layoutWidget then return end
         widget.removeAllChildren(layoutWidget)
         if type(itemDescriptor) ~= "table" then itemDescriptor = root.createItem(itemDescriptor) end
         local itemCfg = itemDescriptor
@@ -30,8 +31,8 @@ require "/scripts/util.lua"
             itemCfg.name = copy(itemDescriptor.name)
             itemCfg = sb.jsonMerge(itemCfg, itemDescriptor)
         end
-        local configParameters = function(paramName)
-            return (itemCfg.parameters or {})[paramName] or itemCfg.config[paramName]
+        local configParameters = function(paramName, defaultValue)
+            return (itemCfg.parameters or {})[paramName] or itemCfg.config[paramName] or defaultValue
         end
 
         local tooltipKind = configParameters("descriptorKind") or configParameters("tooltipKind")
@@ -102,8 +103,8 @@ require "/scripts/util.lua"
 
     -- widget
         function itemDescriptorType.statusList(widgetPath, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local describe = function(statusEffect)
                 local id = widget.addListItem(widgetPath)
@@ -128,15 +129,15 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.title(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             widget.setText(path, configParameters("shortdescription") or "")
         end
 
         function itemDescriptorType.subTitle(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local category = root.assetJson("/items/categories.config")["labels"]
             local tooltipFields = configParameters("tooltipFields") or {}
@@ -144,11 +145,12 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.titleIcon(path, descriptor, widgetCfg, layoutWidget, widgetName)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
-            --local devAtWork = true
+            local devAtWork = true
             if widgetCfg.iconMode and devAtWork then
+                -- preparing and making backingImage
                 local widgetCfg = copy(widgetCfg)
                 widgetCfg.type = "image"
                 widgetCfg.position = vec2.add(widgetCfg.position, {11, 11})
@@ -169,9 +171,12 @@ require "/scripts/util.lua"
 				elseif not widgetName then
 					sb.logInfo("Error %s widgetName", widgetName)
                 end
+                -- item inventoryIcon
                 widgetCfg.drawables = {
                     
                 }
+                widgetCfg.maxSize = {16, 16}
+                widgetCfg.minSize = {0, 0}
                 widgetCfg.zlevel = 0
                 if widgetCfg.showRarity then
                     table.insert(widgetCfg.drawables, {image = string.gsub("/interface/inventory/itemborder<rarity>.png", "<rarity>", rarity)})
@@ -205,30 +210,30 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.priceLabel(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             widget.setText(path, configParameters("price") or 0)
         end
 
         function itemDescriptorType.descriptionLabel(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             widget.setText(path, configParameters("description") or "")
         end
 
         function itemDescriptorType.rarityLabel(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             
             widget.setText(path, rarityLabel[string.lower(configParameters("rarity"))] or "")
         end
 
         function itemDescriptorType.objectImage(path, descriptor, widgetCfg, layoutWidget, widgetName)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local isAWearable = function()
                 if root.itemFile then
@@ -267,8 +272,9 @@ require "/scripts/util.lua"
                 end
             end
             local image = configParameters("inventoryIcon", configParameters("codexIcon"))
+            local materialId = configParameters("materialId") -- currently not used, would be used to fetch the preview tile image if osb is installed or the modpack contain a file that list the material ids
             local tooltipKind = configParameters("tooltipKind")
-            
+
             if configParameters("objectName") then -- object image
                 local placementImage = configParameters("placementImage")
                 if placementImage then
@@ -365,7 +371,6 @@ require "/scripts/util.lua"
                 widget.removeChild(layoutWidget, widgetName)
                 widget.addChild(layoutWidget, newImage, widgetName)
             else
-                --sb.logInfo("tooltipKind %s", tooltipKind)
                 if type(image) == "string" then
                     if not (string.find(image, "/") == 1) then
                         image = descriptor.directory.. image
@@ -396,8 +401,8 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.largeImage(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local image = configParameters("largeImage")
             if not (string.find(image, "/") == 1) then
@@ -407,8 +412,8 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.handednessLabel(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local twoHanded = configParameters("twoHanded")
             local tooltipText = "1-Handed"
@@ -419,8 +424,8 @@ require "/scripts/util.lua"
         end
 
         function itemDescriptorType.slotCountLabel(path, descriptor)
-            local configParameters = function(paramName)
-                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName]
+            local configParameters = function(paramName, defaultValue)
+                return (descriptor.parameters or {})[paramName] or descriptor.config[paramName] or defaultValue
             end
             local slotCount = configParameters("slotCount")
             local isContainer = configParameters("objectType") == "container"

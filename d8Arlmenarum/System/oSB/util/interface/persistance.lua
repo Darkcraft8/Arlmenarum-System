@@ -1,5 +1,8 @@
 persistance = {}
--- More testing need to be done
+--[[
+    More testing need to be done, Instable
+
+]]
 function persistance.loadAndClean(path)
     local loaded = persistance.load(path)
     --sb.logInfo("arlm.persist.%s : %s", path, loaded)

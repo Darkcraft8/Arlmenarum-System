@@ -11,5 +11,11 @@
   "version" : "0.0.1",
   "scripts": {"postLoad": [
     "/d8Arlmenarum/System/oSB/mission/postInit.lua"
-  ]}
+  ]},
+
+  "change" : [
+    "itemDescriptor Widget Type Func can now be used outside descriptor",
+    "itemDescriptor itemSlot in iconMode now place a image drawable instead of a itemSlot",
+    "itemDescriptor fixed codexIcon not being found due to a typo"
+  ]
 }

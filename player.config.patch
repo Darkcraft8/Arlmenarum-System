@@ -2,8 +2,13 @@
   [
     { 
       "op" : "add",
-      "path" : "/genericScriptContexts/ArlmSys_Sector",
-      "value" : "/d8Arlmenarum/System/oSB/cockpit/sector/client.lua"
+      "path" : "/genericScriptContexts/Arlm_objectScanLogger",
+      "value" : "/d8Arlmenarum/System/vanilla/scripts/player/objectScanLogger.lua"
+    },
+    { 
+      "op" : "add",
+      "path" : "/genericScriptContexts/Arlm_research",
+      "value" : "/d8Arlmenarum/System/vanilla/scripts/player/research.lua"
     }
   ]
 ]
