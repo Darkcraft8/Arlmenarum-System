@@ -161,6 +161,16 @@ require "/scripts/util.lua"
                 }
                 local invIcon = configParameters("inventoryIcon", configParameters("codexIcon"))
                 local rarity = rarityLabel[string.lower(configParameters("rarity"))]
+
+                local colorOptions = configParameters("colorOptions")
+                local colorDirective = ""
+                if colorOptions then
+                    colorDirective = "?replace"
+                    for a, b in pairs(colorOptions[configParameters("colorIndex", 1)]) do 
+                        colorDirective = colorDirective .. "=" .. a .. ";" .. b
+                    end
+                end
+
                 if widgetCfg.backingImage then
                     table.insert(widgetCfg.drawables, {image = widgetCfg.backingImage})
                 end
@@ -181,15 +191,22 @@ require "/scripts/util.lua"
                 if widgetCfg.showRarity then
                     table.insert(widgetCfg.drawables, {image = string.gsub("/interface/inventory/itemborder<rarity>.png", "<rarity>", rarity)})
                 end
+                
                 if type(invIcon) == "string" then
                     if not (string.find(invIcon, "/") == 1) then
                         invIcon = descriptor.directory.. invIcon
+                    end
+                    if colorOptions then
+                        invIcon = invIcon .. colorDirective
                     end
                     table.insert(widgetCfg.drawables, {image = invIcon})
                 else
                     for _, drawable in pairs(invIcon or {}) do 
                         if not (string.find(drawable.image, "/") == 1) then
                             drawable.image = descriptor.directory.. drawable.image
+                        end
+                        if colorOptions then
+                            drawable.image = drawable.image .. colorDirective
                         end
                         table.insert(widgetCfg.drawables, drawable)
                     end
