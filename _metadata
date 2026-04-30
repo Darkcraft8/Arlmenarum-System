@@ -1,13 +1,21 @@
 {
   "author" : "Darkcraft8",
-  "description" : "",
-  "suggestedClient" : "openStarbound",
-  "friendlyName" : "Arlmenarum | System",
+  "description" : "Systems and Utils that where created for the arlmenarum mod suite.",
+  "recommendedClient" : "openStarbound",
+  "friendlyName" : "Arlmenarum | Systems and Utils",
   "name" : "d8Arlmenarum_System",
   "priority" : 9000,
   "include" : [],
   "require" : ["d8_sharedFiles"],
   "tags" : "Miscellaneous|Dungeons|Mechanics",
   "version" : "0.0.1",
-  "scripts": {}
+  "scripts": {"postLoad": [
+    "/d8Arlmenarum/System/oSB/mission/postInit.lua"
+  ]},
+
+  "change" : [
+    "itemDescriptor Widget Type Func can now be used outside descriptor",
+    "itemDescriptor itemSlot in iconMode now place a image drawable instead of a itemSlot",
+    "itemDescriptor fixed codexIcon not being found due to a typo"
+  ]
 }
