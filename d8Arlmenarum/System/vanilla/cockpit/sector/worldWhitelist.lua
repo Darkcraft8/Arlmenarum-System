@@ -1,7 +1,7 @@
 --[[
     dev note : reimplementing the sector system by hidding specific star type should be the easiest path and allow
      for universe/planet save types, would just need to check how the objects are handled to see if it possible to specifie
-     where celestial object spawn (station, ship and such) or if it already does that by default.
+     where celestial object spawn (station, ship and such), if it already does that by default or if we can hide those.
 ]]
 local _init = init
 local _celestial

@@ -1,4 +1,5 @@
 require "/scripts/util.lua"
+require "/scripts/vec2.lua"
 -- itemDescriptor
 
     --[[ Todo
@@ -36,7 +37,7 @@ require "/scripts/util.lua"
         end
 
         local tooltipKind = configParameters("descriptorKind") or configParameters("tooltipKind")
-        if not tooltipKind then tooltipKind = "base" end
+        if (not tooltipKind) or (tooltipKind == "") then tooltipKind = "base" end
         local path = ""
         if not (string.find(tooltipKind, "/") == 1) then
             path = string.format("/interface/itemdescriptions/%s.itemdescription", tooltipKind)
@@ -100,7 +101,10 @@ require "/scripts/util.lua"
             end
         end
     end
-
+    function clearCraftDescription(layoutWidget)
+        if not layoutWidget then return end
+        widget.removeAllChildren(layoutWidget)
+    end
     -- widget
         function itemDescriptorType.statusList(widgetPath, descriptor)
             local configParameters = function(paramName, defaultValue)
@@ -153,7 +157,7 @@ require "/scripts/util.lua"
                 -- preparing and making backingImage
                 local widgetCfg = copy(widgetCfg)
                 widgetCfg.type = "image"
-                widgetCfg.position = vec2.add(widgetCfg.position, {11, 11})
+                widgetCfg.position = vec2.add(widgetCfg.position or {0, 0}, {11, 11})
                 widgetCfg.centered = true
                 widgetCfg.zlevel = -1
                 widgetCfg.drawables = {

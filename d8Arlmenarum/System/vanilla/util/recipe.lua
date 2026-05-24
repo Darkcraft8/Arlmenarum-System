@@ -78,9 +78,9 @@ function arlm_recipeFunc.inputDescriptor(input, currencyInput) -- generalise the
     return _input, _currencyInput
 end
 
-function arlm_recipeFunc.canCraft(recipe, keepPreviousItemCount)
+function arlm_recipeFunc.canCraft(recipe, keepPreviousItemCount, admin)
     if not keepPreviousItemCount then arlm_recipeFunc.resetPreviousItemCount() end
-    if player.isAdmin() then
+    if player.isAdmin() or admin then
         return 9999
     else
         local maxAmount = 9999
@@ -114,11 +114,11 @@ function arlm_recipeFunc.printPreviousItemCount(pretty)
         return sb.printJson(arlm_recipeFunc_previousItemCount)
     end
 end
-function arlm_recipeFunc.canCraftRecipes(recipeList, resetPreviousItemCount) -- not tested
+function arlm_recipeFunc.canCraftRecipes(recipeList, resetPreviousItemCount, admin) -- not tested
     if resetPreviousItemCount then arlm_recipeFunc.resetPreviousItemCount() end
     local resultList = {}
     for index, recipe in pairs(recipeList) do
-        resultList[index] = arlm_recipeFunc.canCraft(recipe, not resetPreviousItemCount)
+        resultList[index] = arlm_recipeFunc.canCraft(recipe, false, admin)
     end
     return resultList
 end

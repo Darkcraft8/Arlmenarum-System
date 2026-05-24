@@ -30,8 +30,7 @@ layout.resize = function(self, layoutPath, hiddenList, widgetList, isList)
         if not layoutData[layoutPath]["widgetSize"][stringifiedIndex] then
             layoutData[layoutPath]["widgetSize"][stringifiedIndex] = widget.getSize(n)
         end
-        
-        if hiddenList[n] then
+        if (hiddenList or {})[n] then
             widget.setVisible(n, false)
             if isList then widget.setPosition(n, layoutData[layoutPath]["widgetPosition"][stringifiedIndex]) end
             hO = hO + 1
@@ -50,7 +49,7 @@ layout.resize = function(self, layoutPath, hiddenList, widgetList, isList)
     }
     widget.setSize(layoutPath, vec2.sub(listSize, sizeModiff))
     for i, n in pairs(widgetList) do
-        if not hiddenList[n] then
+        if not (hiddenList or {})[n] then
             widget.setPosition(n, vec2.sub(widget.getPosition(n), sizeModiff))
         end
     end

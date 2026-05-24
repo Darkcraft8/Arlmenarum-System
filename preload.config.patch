@@ -1,0 +1,12 @@
+[
+  [
+    {
+      "op" : "add",
+      "path" : "/-",
+      "value" : {
+        "type": "json",
+        "path": "/d8Arlmenarum/System/oSB/data/recipeList.config"
+      }
+    }
+  ]
+]

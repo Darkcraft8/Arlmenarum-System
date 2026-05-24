@@ -5,6 +5,7 @@ function isOwner() -- return if the player uuid is the same as the object owner
     if pane.sourceEntity() then
         local sourceEntity = pane.sourceEntity()
         local owner = config.getParameter("owner")
+        if string.find(owner, "_") then sb.logInfo("Pane doesn't have a source... expecting it to be opener by player") return true end -- object has been given a owner parameter to not get autoLooted.
         if world.entityType(sourceEntity) == "object" then
             local objectParam = world.getObjectParameter(sourceEntity, "")
             

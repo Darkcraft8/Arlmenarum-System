@@ -1,3 +1,6 @@
+--[[
+    WIP
+]]
 function init()
     --message.setHandler("objectScanned", function(...) onObjectScanned(...) end)
 end

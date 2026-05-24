@@ -1,3 +1,6 @@
+--[[
+    Untested
+]]
 function updateResearchsList()
     researchsList = player.getProperty("researchList") or {}
 end
